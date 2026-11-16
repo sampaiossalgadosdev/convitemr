@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Painel · MR 15</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #eef4fa; color: #1f3a6b; display: grid; place-items: center; min-height: 100vh; margin: 0; }
+    form { background: #fff; padding: 32px; border-radius: 14px; box-shadow: 0 4px 24px rgba(31,58,107,.1); width: min(340px, 90vw); }
+    h1 { font-size: 20px; margin: 0 0 18px; }
+    input, button { width: 100%; padding: 12px; font-size: 16px; border-radius: 8px; box-sizing: border-box; }
+    input { border: 1.5px solid #b9cbe2; margin-bottom: 12px; }
+    button { background: #1f3a6b; color: #fff; border: none; cursor: pointer; }
+    .erro { color: #b3261e; font-size: 14px; margin-bottom: 10px; display: none; }
+  </style>
+</head>
+<body>
+  <form method="POST" action="/admin/login">
+    <h1>Painel de confirmações</h1>
+    <div class="erro" id="erro">Senha incorreta.</div>
+    <input type="password" name="senha" placeholder="Senha" required autofocus>
+    <button type="submit">Entrar</button>
+  </form>
+  <script>
+    if (location.search.includes('erro=1')) document.getElementById('erro').style.display = 'block';
+  </script>
+</body>
+</html>

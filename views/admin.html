@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Confirmações · MR 15</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: #eef4fa; color: #1f3a6b; margin: 0; padding: 24px 16px; }
+    .wrap { max-width: 720px; margin: 0 auto; }
+    header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    h1 { font-size: 22px; margin: 0; }
+    .total { font-size: 15px; opacity: .8; }
+    .acoes { display: flex; gap: 8px; }
+    .acoes a, .acoes button { font-size: 14px; padding: 8px 12px; border-radius: 8px; border: 1.5px solid #1f3a6b; background: #fff; color: #1f3a6b; text-decoration: none; cursor: pointer; font-family: inherit; }
+    input[type=search] { width: 100%; padding: 10px 12px; font-size: 16px; border: 1.5px solid #b9cbe2; border-radius: 8px; margin-bottom: 14px; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 14px rgba(31,58,107,.08); }
+    th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid #e6edf5; font-size: 15px; }
+    th { background: #1f3a6b; color: #fff; font-weight: 500; }
+    td.n { width: 44px; opacity: .6; }
+    td.d { white-space: nowrap; font-size: 13px; opacity: .7; }
+    td.x { width: 40px; text-align: right; }
+    td.x button { background: none; border: none; color: #b3261e; cursor: pointer; font-size: 16px; }
+    .vazio { text-align: center; padding: 30px; opacity: .6; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Confirmações · MR 15</h1>
+        <div class="total" id="total">Carregando...</div>
+      </div>
+      <div class="acoes">
+        <a href="/api/confirmacoes.csv">Baixar planilha</a>
+        <form method="POST" action="/admin/sair"><button type="submit">Sair</button></form>
+      </div>
+    </header>
+
+    <input type="search" id="busca" placeholder="Buscar nome...">
+
+    <table>
+      <thead><tr><th>#</th><th>Nome</th><th>Confirmou em</th><th></th></tr></thead>
+      <tbody id="lista"></tbody>
+    </table>
+  </div>
+
+  <script>
+    let dados = [];
+    const lista = document.getElementById('lista');
+    const busca = document.getElementById('busca');
+    const total = document.getElementById('total');
+
+    const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const fmt = (d) => new Date(d).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+
+    function render() {
+      const q = busca.value.trim().toLowerCase();
+      const f = dados.filter((c) => c.nome.toLowerCase().includes(q));
+      total.textContent = `${dados.length} ${dados.length === 1 ? 'pessoa confirmada' : 'pessoas confirmadas'}`;
+      if (!f.length) {
+        lista.innerHTML = `<tr><td colspan="4" class="vazio">${dados.length ? 'Nenhum nome encontrado.' : 'Ninguém confirmou ainda.'}</td></tr>`;
+        return;
+      }
+      lista.innerHTML = f.map((c, i) => `
+        <tr>
+          <td class="n">${i + 1}</td>
+          <td>${esc(c.nome)}</td>
+          <td class="d">${fmt(c.criado_em)}</td>
+          <td class="x"><button title="Remover" data-id="${c.id}" data-nome="${esc(c.nome)}">✕</button></td>
+        </tr>`).join('');
+    }
+
+    async function carregar() {
+      const r = await fetch('/api/confirmacoes');
+      if (r.status === 401) return location.reload();
+      dados = await r.json();
+      render();
+    }
+
+    lista.addEventListener('click', async (e) => {
+      const b = e.target.closest('button[data-id]');
+      if (!b) return;
+      if (!confirm(`Remover "${b.dataset.nome}" da lista?`)) return;
+      await fetch('/api/confirmacoes/' + b.dataset.id, { method: 'DELETE' });
+      carregar();
+    });
+
+    busca.addEventListener('input', render);
+    carregar();
+    setInterval(carregar, 20000); // atualiza sozinho a cada 20s
+  </script>
+</body>
+</html>

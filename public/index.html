@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Você recebeu um convite · MR 15</title>
+  <meta name="description" content="Convite para os 15 anos de MR · 23.01.2027 às 18:00h">
+  <meta property="og:title" content="Você recebeu um convite · MR 15">
+  <meta property="og:description" content="23.01.2027 às 18:00h · Clique para abrir">
+  <meta property="og:image" content="/assets/envelope.jpg">
+  <meta name="theme-color" content="#eef4fa">
+  <link rel="preload" href="/assets/abertura.mp4" as="video" type="video/mp4">
+  <link rel="preload" href="/assets/convite.jpg" as="image">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="stage-wrap">
+    <div class="stage" id="stage">
+      <!-- 3) Imagem estática final (fica por baixo) -->
+      <img class="layer" id="estatico" src="/assets/convite.jpg" alt="MR 15 - 23.01.2027 às 18:00h">
+
+      <!-- 2) Vídeo da abertura -->
+      <video class="layer" id="video" src="/assets/abertura.mp4" muted playsinline preload="auto"></video>
+
+      <!-- 1) Envelope (fica por cima) -->
+      <img class="layer" id="envelope" src="/assets/envelope.jpg" alt="Você recebeu um convite - clique no convite para abrir" style="cursor:pointer">
+
+      <!-- Áreas clicáveis da imagem estática -->
+      <div class="hotspots hidden" id="hotspots">
+        <a class="hotspot" id="btnMaps" target="_blank" rel="noopener" aria-label="Localização no maps"
+           style="left:26.5%; width:15%; top:62%; height:13%"></a>
+        <a class="hotspot" href="/confirmar" aria-label="Confirme sua presença"
+           style="left:42%; width:15.6%; top:62%; height:13%"></a>
+        <a class="hotspot" id="btnPresentes" target="_blank" rel="noopener" aria-label="Sugestões de presentes"
+           style="left:58.2%; width:15.6%; top:62%; height:13%"></a>
+      </div>
+
+      <div class="toast" id="toast"></div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Configurações fáceis de editar =====
+    const CONFIG = {
+      // Endereço que abre no Google Maps (troque pelo endereço exato do salão quando tiver)
+      localizacao: 'Abatiá, PR',
+      // Link da lista de presentes (deixe vazio para mostrar "Em breve")
+      presentes: ''
+    };
+
+    const envelope = document.getElementById('envelope');
+    const video = document.getElementById('video');
+    const hotspots = document.getElementById('hotspots');
+    const toast = document.getElementById('toast');
+
+    document.getElementById('btnMaps').href =
+      'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(CONFIG.localizacao);
+
+    const btnPresentes = document.getElementById('btnPresentes');
+    if (CONFIG.presentes) {
+      btnPresentes.href = CONFIG.presentes;
+    } else {
+      btnPresentes.href = '#';
+      btnPresentes.addEventListener('click', (e) => {
+        e.preventDefault();
+        toast.textContent = 'Lista de presentes em breve 💙';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2200);
+      });
+    }
+
+    let aberto = false;
+
+    function mostrarConviteFinal() {
+      video.classList.add('hidden');
+      hotspots.classList.remove('hidden');
+    }
+
+    function abrir() {
+      if (aberto) return;
+      aberto = true;
+      envelope.style.cursor = 'default';
+      video.currentTime = 0;
+      const p = video.play();
+      envelope.classList.add('hidden'); // envelope desaparece suavemente sobre o início do vídeo
+      if (p && p.catch) p.catch(() => mostrarConviteFinal()); // se o vídeo falhar, vai direto pro convite
+    }
+
+    video.addEventListener('ended', mostrarConviteFinal);
+    video.addEventListener('error', () => { if (aberto) mostrarConviteFinal(); });
+    envelope.addEventListener('click', abrir);
+
+    // Sempre que a pessoa voltar para esta página (inclusive pelo botão "voltar"), recomeça do envelope
+    function resetar() {
+      aberto = false;
+      video.pause();
+      video.currentTime = 0;
+      video.classList.remove('hidden');
+      hotspots.classList.add('hidden');
+      envelope.classList.remove('hidden');
+      envelope.style.cursor = 'pointer';
+    }
+    window.addEventListener('pageshow', (e) => { if (e.persisted) resetar(); });
+  </script>
+</body>
+</html>

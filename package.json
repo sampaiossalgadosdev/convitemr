@@ -1,0 +1,16 @@
+{
+  "name": "convite-mr15",
+  "version": "1.0.0",
+  "description": "Convite digital MR 15 com confirmação de presença",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "pg": "^8.13.1"
+  }
+}
