@@ -4,14 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Você recebeu um convite · MR 15</title>
+  <link rel="icon" href="/favicon.ico?v=2" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icone-32.png?v=2">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icone-192.png?v=2">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=2">
   <meta name="description" content="Convite para os 15 anos de MR · 23.01.2027 às 18:00h">
   <meta property="og:title" content="Você recebeu um convite · MR 15">
   <meta property="og:description" content="23.01.2027 às 18:00h · Clique para abrir">
   <meta property="og:image" content="/assets/envelope.jpg">
   <meta name="theme-color" content="#eef4fa">
-  <link rel="preload" href="/assets/abertura.mp4" as="video" type="video/mp4">
   <link rel="preload" href="/assets/convite.jpg" as="image">
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/style.css?v=3">
 </head>
 <body>
   <div class="stage-wrap">
@@ -36,6 +39,7 @@
       </div>
 
       <div class="toast" id="toast"></div>
+
     </div>
   </div>
 
@@ -90,17 +94,35 @@
     video.addEventListener('error', () => { if (aberto) mostrarConviteFinal(); });
     envelope.addEventListener('click', abrir);
 
-    // Sempre que a pessoa voltar para esta página (inclusive pelo botão "voltar"), recomeça do envelope
-    function resetar() {
-      aberto = false;
+    // Quem volta da página de confirmação (link "Voltar" ou botão voltar do navegador)
+    // cai direto no convite já aberto, sem repetir o envelope e o vídeo.
+    const stage = document.getElementById('stage');
+    function mostrarAbertoDireto() {
+      aberto = true;
+      stage.classList.add('sem-transicao');
       video.pause();
-      video.currentTime = 0;
-      video.classList.remove('hidden');
-      hotspots.classList.add('hidden');
-      envelope.classList.remove('hidden');
-      envelope.style.cursor = 'pointer';
+      envelope.classList.add('hidden');
+      envelope.style.cursor = 'default';
+      mostrarConviteFinal();
+      requestAnimationFrame(() => requestAnimationFrame(() => stage.classList.remove('sem-transicao')));
     }
-    window.addEventListener('pageshow', (e) => { if (e.persisted) resetar(); });
+
+    const lerFlag = () => { try { return sessionStorage.getItem('mr15-aberto') === '1'; } catch { return false; } };
+    const salvarFlag = () => { try { sessionStorage.setItem('mr15-aberto', '1'); } catch {} };
+    video.addEventListener('ended', salvarFlag);
+    document.querySelector('a[href="/confirmar"]').addEventListener('click', salvarFlag);
+
+    const params = new URLSearchParams(location.search);
+    const nav = performance.getEntriesByType('navigation')[0];
+    const voltou = nav && nav.type === 'back_forward' && lerFlag();
+    if (params.get('aberto') === '1' || voltou) {
+      mostrarAbertoDireto();
+      if (params.has('aberto')) history.replaceState(null, '', '/'); // não deixa o link "aberto" ser compartilhado
+    }
+    // Página restaurada do cache do navegador: mantém como estava (convite aberto)
+    window.addEventListener('pageshow', (e) => { if (e.persisted && aberto) mostrarAbertoDireto(); });
+
   </script>
+  <script src="/musica.js?v=1"></script>
 </body>
 </html>

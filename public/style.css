@@ -33,7 +33,15 @@ html, body {
   object-fit: cover;
   transition: opacity 900ms ease;
 }
+/* O <video> tem fundo preto por padrão e, com o palco em tamanho fracionado,
+   o navegador deixa uma fresta de 1px na borda — fundo branco + leve zoom escondem isso */
+video.layer {
+  background: #fff;
+  transform: scale(1.012);
+  outline: none;
+}
 .hidden { opacity: 0; pointer-events: none; }
+.sem-transicao .layer { transition: none !important; }
 
 /* Áreas clicáveis (em % da arte) */
 .hotspot {
@@ -63,6 +71,31 @@ html, body {
   pointer-events: none;
 }
 .toast.show { opacity: 1; }
+
+/* Botão discreto de música */
+.som {
+  position: absolute;
+  top: 2.2%;
+  right: 3%;
+  z-index: 5;
+  width: max(30px, 6.4cqw);
+  height: max(30px, 6.4cqw);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .55);
+  color: #1f3a6b;
+  opacity: .5;
+  cursor: pointer;
+  transition: opacity 200ms;
+}
+.som:hover, .som:focus-visible { opacity: .9; }
+.som svg { width: 56%; height: 56%; }
+.som .ic-off { display: none; }
+.som.mudo .ic-on { display: none; }
+.som.mudo .ic-off { display: block; }
 
 /* Formulário */
 .form-box {
