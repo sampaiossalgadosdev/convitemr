@@ -26,7 +26,7 @@
       '<path d="M17 9.5l5 5M22 9.5l-5 5"/></svg>';
   document.body.appendChild(btnSom);
 
-  const musica = new Audio('/assets/musica.m4a');
+  const musica = new Audio('/assets/musica.m4a?v=2');
   musica.loop = true;
   musica.preload = 'auto';
   musica.volume = VOLUME;

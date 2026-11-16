@@ -14,7 +14,7 @@
   <meta property="og:image" content="/assets/envelope.jpg">
   <meta name="theme-color" content="#eef4fa">
   <link rel="preload" href="/assets/convite.jpg" as="image">
-  <link rel="stylesheet" href="/style.css?v=5">
+  <link rel="stylesheet" href="/style.css?v=6">
 </head>
 <body>
   <div class="stage-wrap">
@@ -170,8 +170,15 @@
       mostrarConfirmar(location.pathname === '/confirmar');
     });
 
+    // Link direto para /confirmar: abre já na tela de confirmação, sem animação
+    if (location.pathname === '/confirmar') {
+      stage.classList.add('sem-transicao');
+      mostrarConfirmar(true);
+      requestAnimationFrame(() => requestAnimationFrame(() => stage.classList.remove('sem-transicao')));
+    }
+
   </script>
   <script src="/confirmar.js?v=1"></script>
-  <script src="/musica.js?v=3"></script>
+  <script src="/musica.js?v=4"></script>
 </body>
 </html>

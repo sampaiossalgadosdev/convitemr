@@ -47,7 +47,8 @@ video.layer {
   outline: none;
 }
 .hidden { opacity: 0; pointer-events: none; }
-.sem-transicao .layer { transition: none !important; }
+.sem-transicao .layer,
+.sem-transicao .tela-confirmar { transition: none !important; }
 
 /* Tela de confirmação por cima do convite */
 .tela-confirmar {
