@@ -8,18 +8,24 @@ html, body {
   overflow: hidden;
 }
 
-/* Palco com a proporção exata das artes (1240 x 1748) */
+/* Palco com a proporção exata das artes (1240 x 1748).
+   Ocupa sempre a altura toda da tela: no celular (tela mais estreita que a arte)
+   as laterais da arte ficam um pouco de fora, sem sobrar faixa em cima/embaixo. */
 .stage-wrap {
+  height: 100vh;
   height: 100dvh;
   width: 100vw;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 .stage {
   position: relative;
+  flex-shrink: 0;
   aspect-ratio: 1240 / 1748;
-  height: min(100dvh, calc(100vw * 1748 / 1240));
+  height: 100vh;
+  height: 100dvh;
   background: #fff;
   overflow: hidden;
   box-shadow: 0 0 40px rgba(31, 58, 107, .12);
@@ -73,13 +79,15 @@ video.layer {
 .toast.show { opacity: 1; }
 
 /* Botão discreto de música */
+/* Fica preso ao canto da TELA (não da arte), para nunca ficar na parte cortada */
 .som {
-  position: absolute;
-  top: 2.2%;
-  right: 3%;
-  z-index: 5;
-  width: max(30px, 6.4cqw);
-  height: max(30px, 6.4cqw);
+  position: fixed;
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  right: calc(12px + env(safe-area-inset-right, 0px));
+  z-index: 50;
+  width: 34px;
+  height: 34px;
+  touch-action: manipulation;
   display: grid;
   place-items: center;
   padding: 0;
@@ -100,8 +108,9 @@ video.layer {
 /* Formulário */
 .form-box {
   position: absolute;
-  left: 17%;
-  right: 17%;
+  /* 17% da arte, mas nunca encostando nas bordas visíveis da tela (24px de folga) */
+  left: calc(50% - min(33cqw, 50vw - 24px));
+  right: calc(50% - min(33cqw, 50vw - 24px));
   top: 25%;
   text-align: center;
 }

@@ -24,7 +24,7 @@
     '<svg class="ic-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">' +
       '<path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor" stroke="none"/>' +
       '<path d="M17 9.5l5 5M22 9.5l-5 5"/></svg>';
-  stage.appendChild(btnSom);
+  document.body.appendChild(btnSom);
 
   const musica = new Audio('/assets/musica.m4a');
   musica.loop = true;
@@ -44,7 +44,7 @@
     if (musica.readyState >= 1) irPara();
     else musica.addEventListener('loadedmetadata', irPara, { once: true });
   }
-  const salvarPosicao = () => { if (tocando) gravar(CHAVE_POSICAO, String(musica.currentTime)); };
+  const salvarPosicao = () => { if (musica.currentTime > 0) gravar(CHAVE_POSICAO, String(musica.currentTime)); };
   window.addEventListener('pagehide', salvarPosicao);
 
   // No iPhone o volume do <audio> é ignorado; passando pelo Web Audio dá para controlar.
@@ -61,14 +61,16 @@
     } catch { ctx = null; musica.volume = VOLUME; }
   }
 
+  // "Mudo" = pausar. No celular (principalmente iPhone) a propriedade muted não silencia
+  // o áudio que passa pelo Web Audio, mas pausar funciona em qualquer navegador.
   function aplicarMudo() {
-    musica.muted = mudo;
     btnSom.classList.toggle('mudo', mudo);
     btnSom.setAttribute('aria-pressed', String(mudo));
     btnSom.setAttribute('aria-label', mudo ? 'Ligar música' : 'Desligar música');
   }
 
   function tocar(comInteracao) {
+    if (mudo) return;
     if (comInteracao) {
       rotearVolume();
       if (ctx && ctx.state === 'suspended') ctx.resume();
@@ -81,29 +83,40 @@
   const eventosInteracao = ['pointerdown', 'touchend', 'click', 'keydown'];
   function aoInteragir(e) {
     if (e.target.closest && e.target.closest('.som')) return; // o botão de som cuida de si
-    if (!tocando) tocar(true);
+    if (!tocando && !mudo) tocar(true);
   }
   function pararDeEsperar() {
     eventosInteracao.forEach((ev) => document.removeEventListener(ev, aoInteragir, true));
   }
   eventosInteracao.forEach((ev) => document.addEventListener(ev, aoInteragir, true));
 
-  btnSom.addEventListener('click', () => {
+  btnSom.addEventListener('click', (e) => {
+    e.stopPropagation();
     mudo = !mudo;
     gravar(CHAVE_MUDO, mudo ? '1' : '0');
     aplicarMudo();
-    if (!mudo && !tocando) tocar(true);
+    if (mudo) {
+      musica.pause();
+      tocando = false;
+    } else {
+      tocar(true);
+    }
   });
 
   // Pausa quando a aba fica em segundo plano e retoma ao voltar
   document.addEventListener('visibilitychange', () => {
-    if (!tocando) return;
     if (document.hidden) { salvarPosicao(); musica.pause(); }
-    else musica.play().catch(() => {});
+    else if (tocando && !mudo) musica.play().catch(() => {});
   });
   // Página restaurada do cache do navegador (botão voltar)
-  window.addEventListener('pageshow', (e) => { if (e.persisted && tocando) musica.play().catch(() => {}); });
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted && tocando && !mudo) musica.play().catch(() => {});
+  });
 
   aplicarMudo();
-  tocar(false); // tenta tocar já ao abrir a tela (funciona se o navegador permitir)
+
+  // Tenta tocar sozinha: 2s depois de entrar no site na primeira vez, e na hora nas telas seguintes.
+  // Se o navegador bloquear (som sem interação), ela começa no primeiro toque/clique (acima).
+  const primeiraVez = ler(CHAVE_POSICAO) === null;
+  setTimeout(() => { if (!tocando) tocar(false); }, primeiraVez ? 2000 : 0);
 })();
