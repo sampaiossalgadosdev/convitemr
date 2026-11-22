@@ -2,7 +2,8 @@
 
 ## Páginas
 - `/` — envelope → (clique) vídeo de abertura → convite estático com os 3 botões
-- `/confirmar` — formulário de confirmação de presença
+- `/confirmar` — formulário de confirmação de presença (abre dentro do convite, sem trocar de página)
+- `/presentes` — sugestões de presentes e tamanhos
 - `/admin` — lista de confirmados (protegida por senha), com busca, remoção e download em planilha (CSV)
 
 ## Rodar local
@@ -28,7 +29,6 @@ ADMIN_PASSWORD=minhasenha npm start
 No topo do `<script>` de `public/index.html`:
 ```js
 const CONFIG = {
-  localizacao: 'Abatiá, PR', // troque pelo endereço exato do salão
-  presentes: ''              // link da lista de presentes (vazio = mostra "em breve")
+  mapa: 'https://www.google.com/maps/place/...' // link do local da festa no Google Maps
 };
 ```

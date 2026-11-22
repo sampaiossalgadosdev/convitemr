@@ -75,10 +75,22 @@ const isAdmin = (req) => {
 };
 
 // ---------- Rotas ----------
-app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1d', index: 'index.html' }));
+// Páginas HTML: o navegador sempre confere se há versão nova (senão o convite fica desatualizado após um deploy).
+// Imagens, vídeo, música, CSS e JS podem ficar 1 dia em cache — eles já mudam de "?v=" a cada atualização.
+const SEM_CACHE = 'no-cache';
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '1d',
+  index: 'index.html',
+  setHeaders: (res, arquivo) => {
+    if (arquivo.endsWith('.html')) res.setHeader('Cache-Control', SEM_CACHE);
+  },
+}));
 
 // Tudo é um documento só: /confirmar e /presentes entregam o mesmo index.html, que abre direto na tela correspondente
-app.get(['/confirmar', '/presentes'], (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get(['/confirmar', '/presentes'], (req, res) => {
+  res.setHeader('Cache-Control', SEM_CACHE);
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 app.post('/api/confirmar', async (req, res) => {
   const nome = String((req.body && req.body.nome) || '').replace(/\s+/g, ' ').trim();

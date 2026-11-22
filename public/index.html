@@ -90,16 +90,15 @@
   <script>
     // ===== Configurações fáceis de editar =====
     const CONFIG = {
-      // Endereço que abre no Google Maps (troque pelo endereço exato do salão quando tiver)
-      localizacao: 'Abatiá, PR'
+      // Link do local da festa no Google Maps
+      mapa: 'https://www.google.com/maps/place/Serra+Dourada+Clube+de+Campo/@-23.3086358,-50.3111317,570m/data=!3m1!1e3!4m6!3m5!1s0x94ea8d796cdff6f7:0x6b67c873578750bf!8m2!3d-23.3083151!4d-50.3113944!16s%2Fg%2F11b6j7920m?entry=ttu&g_ep=EgoyMDI2MTExOC4xIKXMDSoASAFQAw%3D%3D'
     };
 
     const envelope = document.getElementById('envelope');
     const video = document.getElementById('video');
     const hotspots = document.getElementById('hotspots');
 
-    document.getElementById('btnMaps').href =
-      'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(CONFIG.localizacao);
+    document.getElementById('btnMaps').href = CONFIG.mapa;
 
     let aberto = false;
 
