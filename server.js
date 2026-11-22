@@ -77,8 +77,8 @@ const isAdmin = (req) => {
 // ---------- Rotas ----------
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1d', index: 'index.html' }));
 
-// Tudo é um documento só: /confirmar entrega o mesmo index.html, que abre direto na tela de confirmação
-app.get('/confirmar', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+// Tudo é um documento só: /confirmar e /presentes entregam o mesmo index.html, que abre direto na tela correspondente
+app.get(['/confirmar', '/presentes'], (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 app.post('/api/confirmar', async (req, res) => {
   const nome = String((req.body && req.body.nome) || '').replace(/\s+/g, ' ').trim();

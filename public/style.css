@@ -48,10 +48,10 @@ video.layer {
 }
 .hidden { opacity: 0; pointer-events: none; }
 .sem-transicao .layer,
-.sem-transicao .tela-confirmar { transition: none !important; }
+.sem-transicao .tela { transition: none !important; }
 
 /* Tela de confirmação por cima do convite */
-.tela-confirmar {
+.tela {
   position: absolute;
   inset: 0;
   z-index: 3;
@@ -181,3 +181,41 @@ video.layer {
 
 .fade-in { animation: fadeIn 700ms ease both; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Tela de sugestões de presentes (mesmo visual da confirmação) */
+.presentes-box { top: 21.5%; }
+.presentes-box h1 { font-size: 5.6cqw; margin-bottom: 3%; }
+.presentes-box .texto {
+  font-size: 3.1cqw;
+  line-height: 1.45;
+  opacity: .9;
+  margin-bottom: 2.5%;
+}
+.tamanhos {
+  list-style: none;
+  width: 74%;
+  margin: 1% auto 0;
+  text-align: left;
+}
+.tamanhos li {
+  display: flex;
+  align-items: center;
+  gap: 2.6cqw;
+  padding: 1.3cqw 1cqw;
+  font-size: 3.3cqw;
+  border-bottom: 1px solid #d3e0f0;
+}
+.tamanhos li:last-child { border-bottom: none; }
+.tamanhos svg {
+  flex: none;
+  width: 5.6cqw;
+  height: 5.6cqw;
+  fill: none;
+  stroke: #1f3a6b;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tamanhos span { flex: 1; }
+.tamanhos strong { font-weight: 400; letter-spacing: .5px; }
+.presentes-box .link-voltar { margin-top: 3%; }
